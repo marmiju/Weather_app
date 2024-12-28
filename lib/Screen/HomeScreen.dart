@@ -1,25 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:weather_app/Controller/Location_Service.dart';
-import 'package:weather_app/Controller/fetchLocation.dart';
+import 'package:weather_app/Controller/Riverpod/currentLocation.dart';
 
-class Homescreen extends StatefulWidget {
+class Homescreen extends ConsumerStatefulWidget {
   const Homescreen({super.key});
 
   @override
-  State<Homescreen> createState() => _HomescreenState();
+  ConsumerState<Homescreen> createState() => _HomescreenState();
 }
 
-class _HomescreenState extends State<Homescreen> {
+class _HomescreenState extends ConsumerState<Homescreen> {
+  Position? position;
   @override
-  void initState()  { 
+  void initState() {
     super.initState();
-    fetchLocation();
+    _fetchLocation();
+  }
+
+  void _fetchLocation() async {
+    await ref.read(locationProvider.notifier).fetchLocation();
   }
 
   @override
   Widget build(BuildContext context) {
+    final _postion = ref.watch(locationProvider);
     return Scaffold(
+      appBar: AppBar(
+        title: Text('lat:${_postion!.latitude}'),
+      ),
       body: Center(
         child: ElevatedButton(onPressed: btnclick, child: Text('get Location')),
       ),
